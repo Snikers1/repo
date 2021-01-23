@@ -1,0 +1,149 @@
+/* 
+В базе данных shop и sample присутствуют одни и те же таблицы, учебной базы данных.
+Переместите запись id = 1 из таблицы shop.users в таблицу sample.users. Используйте транзакции
+*/
+
+DROP DATABASE IF EXISTS sample;
+CREATE DATABASE sample;
+use sample;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users(
+	id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(45) NOT NULL,
+	birthday_at DATE DEFAULT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+START TRANSACTION;
+INSERT INTO sample.users SELECT * FROM shop.users WHERE id = 1;
+COMMIT;
+
+
+/*Создайте представление, которое выводит название name товарной позиции из таблицы products и соответствующее название каталога name из таблицы catalogs.*/
+
+CREATE OR REPLACE VIEW v_positions_catalogs (product_name, catalog_name)
+AS 
+SELECT p.name, c.name 
+FROM shop.products p 
+INNER JOIN shop.catalogs c 
+ON (p.catalog_id = c.id);
+
+SELECT * from v_positions_catalogs; 
+
+
+/*(по желанию) Пусть имеется таблица с календарным полем created_at. 
+ * В ней размещены разряженые календарные записи за август 2018 года '2018-08-01', '2016-08-04', '2018-08-16' и 2018-08-17. 
+ * Составьте запрос, который выводит полный список дат за август, выставляя в соседнем поле значение 1, 
+ * если дата присутствует в исходном таблице и 0, если она отсутствует.
+ */
+
+DROP TABLE IF EXISTS t;
+CREATE TABLE t (
+	created_at DATE
+);
+
+INSERT INTO t VALUES
+	('2018-08-01'),
+	('2018-08-04'),
+	('2018-08-16'),
+	('2018-08-17');
+	
+
+SELECT * FROM t;
+
+
+DROP TABLE IF EXISTS num;
+CREATE TABLE IF NOT EXISTS num (i int);
+
+INSERT INTO num(i)
+SELECT 1 FROM DUAL
+   		 UNION 
+   		 SELECT 2 FROM DUAL
+   		 UNION 
+   		 SELECT 3 FROM DUAL
+   		 UNION 
+   		 SELECT 4 FROM DUAL
+   		 UNION 
+   		 SELECT 5 FROM DUAL
+   		 UNION
+   		 SELECT 6 FROM DUAL
+   		 UNION
+   		 SELECT 7 FROM DUAL
+   		 UNION 
+   		 SELECT 8 FROM DUAL
+   		 UNION 
+   		 SELECT 9 FROM DUAL
+   		 UNION 
+   		 SELECT 0 FROM DUAL;
+ 
+SELECT * FROM num;
+
+
+SELECT t1.dt, 
+CASE 
+ WHEN t.created_at IS NOT NULL 
+   THEN 1 
+ ELSE 0 
+END AS exist 
+FROM 
+(
+select
+	adddate('2018-08-01', numlist.id) as dt
+from
+	(
+	SELECT
+		n1.i + n10.i*10 AS id
+	FROM
+		num n1
+	cross join num as n10) as numlist
+where
+	adddate('2018-01-01', numlist.id) <= '2018-01-31'
+
+) t1 
+LEFT JOIN t 
+ON (t1.dt = t.created_at)
+ORDER BY
+	1 asc;
+
+/*(по желанию) Пусть имеется любая таблица с календарным полем created_at.
+ * Создайте запрос, который удаляет устаревшие записи из таблицы, оставляя только 5 самых свежих записей.
+*/
+
+
+
+DROP TABLE IF EXISTS t;
+CREATE TABLE t (
+	created_at DATE
+);
+
+INSERT INTO t VALUES
+	('2021-01-01'),
+	('2021-01-02'),
+	('2021-01-04'),
+	('2021-01-05'),
+	('2021-01-06'),
+	('2021-01-07'),
+	('2021-01-08'),
+	('2021-01-09'),
+	('2021-01-10'),
+	('2021-01-11');
+	
+
+DELETE
+FROM
+	t
+WHERE
+	created_at NOT IN ( (
+	select
+		*
+	from
+		(
+		SELECT
+			created_at
+		FROM
+			t
+		ORDER BY
+			created_at DESC
+		LIMIT 5 ) AS t1) ) ;
