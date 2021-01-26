@@ -1,0 +1,43 @@
+TASK1:
+Попрактиковаться в перемещении между каталогами, используя полный и относительный путь. 
+Перечислить, какие параметры команды cd позволят быстро вернуться в домашний каталог, позволят перейти на уровень выше
+
+
+pwd 
+cd /home
+ls -la 
+cd ./roman 
+mkdir testfolder 
+cd /home/roman/testfolder
+cd ../.. 
+
+Вызов команды cd без параметров или с параметром "тильда" ~ позволяет быстро переместиться в домашний каталог 
+Вызов команды cd с параметром .. позволяет перейти на уровень выше 
+
+TASK2:
+Управление файлами и каталогами и текстовые редакторы.
+Создать файл с наполнением, используя несколько способов. 
+Использовать разобранные текстовые редакторы для наполнения файлов данными.
+Создать копии созданных файлов, создать несколько каталогов с подкаталогами, перенести несколько файлов в созданные каталоги.
+Перечислить команды и используемые параметры команд.
+
+cd testfolder
+touch textfile1.txt 
+vi textfile1.txt 
+Открывается редактор vim. Переходим в режим редактирования с помощью нажатия клавиши "I". 
+Пишем в файле фразу "my test content"
+Нажимаем клавишу escape и вводим :wq для того, чтобы сохранить изменения и выйти из файла 
+cat textfile1.txt 
+cp textfile1.txt textfile1_copy.txt 
+cp textfile1.txt textfile1_copy_1.txt 
+cp textfile1_copy_1.txt textfile1_copy_2.txt
+cd .. 
+mkdir testfolder2
+cd testfolder2
+mkdir testfolder2_1
+cp -r testfolder testfolder2/testfolder2_2
+cd ~
+cp testfolder/textfile1_copy.txt testfolder2/testfolder2_2/new_copy.txt 
+cd testfolder
+cp textfile1_copy_2.txt ../testfolder2/testfolder2_1
+
